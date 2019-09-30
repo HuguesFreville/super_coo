@@ -4,12 +4,24 @@ import java.util.*;
 
 public abstract class Component {
 
-    public HashMap<String, Object> inputs;
-    public HashMap<String, Object> outputs;
+
+    String nom;
+    public float tl;
+    public float tn;
+    public float tr;
+    public float e;
+    protected HashMap<String, Object> inputs;
+
+    public HashMap<String, Object> getOutputs() {
+        return outputs;
+    }
+
+    protected HashMap<String, Object> outputs;
     protected HashMap<String, Etat> etats;
     protected Etat currentEtat;
 
-    public Component() {
+    public Component(String nom) {
+        this.nom = nom;
         inputs = new HashMap<>();
         outputs = new HashMap<>();
         etats = new HashMap<>();
@@ -17,27 +29,52 @@ public abstract class Component {
 
     protected abstract Etat externalImpl(Etat q) throws Exception;
 
-    protected Etat external(Etat etat) throws Exception {
-        currentEtat = externalImpl(etat);
-        return currentEtat;
+    void external() throws Exception {
+        currentEtat = externalImpl(currentEtat);
     }
 
     protected abstract Etat internalImpl(Etat etat) throws Exception;
 
-    protected Etat internal(Etat etat) throws Exception {
-        currentEtat = internalImpl(etat);
-        return currentEtat;
+    void internal() throws Exception {
+        currentEtat = internalImpl(currentEtat);
     }
 
     protected abstract void lambdaImpl(Etat s);
 
-    public void lambda() {
+    void lambda() {
         lambdaImpl(currentEtat);
     }
 
-    public abstract void init();
+    protected abstract void initImpl();
+
+    public void init(){
+        initImpl();
+        tr=currentEtat.duree;
+        tn=tr;
+    }
 
     public Etat getCurrentEtat() {
         return currentEtat;
     }
+
+    public void updateIn(Component... components) {
+        inputs.clear();
+        for (Component c : components) {
+            for (String key : c.outputs.keySet()) {
+                inputs.put(key, c.outputs.get(key));
+            }
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        try {
+            Component o_obj = (Component) obj;
+
+            return o_obj.nom.equals(nom);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }

@@ -7,9 +7,9 @@ import utils.Etat;
 public class G extends Component {
 
     G() {
-        super();
+        super("G");
         etats.put("s", new Etat("s", 2));
-        init();
+        initImpl();
     }
 
     @Override
@@ -28,7 +28,7 @@ public class G extends Component {
     }
 
     @Override
-    public void init() {
+    public void initImpl() {
         currentEtat = etats.get("s");
     }
 }

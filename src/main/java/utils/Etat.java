@@ -9,4 +9,9 @@ public class Etat {
         this.nom = nom;
         this.duree = duree;
     }
+
+    @Override
+    public String toString() {
+        return nom;
+    }
 }

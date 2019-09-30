@@ -5,25 +5,26 @@ import utils.Etat;
 
 public class B extends Component {
 
-    int q = 0;
+    public int q = 0;
 
     public B() {
-        super();
+        super("B");
         etats.put("a", new Etat("a", Integer.MAX_VALUE));
         etats.put("b", new Etat("b", 0));
         etats.put("c", new Etat("c", Integer.MAX_VALUE));
-        init();
+        initImpl();
     }
 
     @Override
     protected Etat externalImpl(Etat etat) throws Exception {
         switch (currentEtat.nom) {
             case "a":
-            case "b":
                 if (inputs.containsKey("job")) {
                     q++;
                     return etats.get("b");
                 }
+                break;
+            case "b":
                 break;
             case "c":
                 if (inputs.containsKey("job")) {
@@ -70,7 +71,7 @@ public class B extends Component {
     }
 
     @Override
-    public void init() {
+    public void initImpl() {
         currentEtat = etats.get("a");
         q = 0;
     }

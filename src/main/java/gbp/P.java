@@ -6,10 +6,10 @@ import utils.Etat;
 public class P extends Component {
 
     P() {
-        super();
+        super("P");
         etats.put("free", new Etat("free", Integer.MAX_VALUE));
         etats.put("busy", new Etat("busy", 3));
-        init();
+        initImpl();
     }
 
 
@@ -50,7 +50,7 @@ public class P extends Component {
     }
 
     @Override
-    public void init() {
+    public void initImpl() {
         currentEtat = etats.get("free");
     }
 }
