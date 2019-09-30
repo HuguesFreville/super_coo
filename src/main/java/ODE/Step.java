@@ -5,26 +5,21 @@ import utils.Etat;
 
 public class Step extends Component {
 
-    public float xi;
-    public float xf;
+    private float xi;
+    private float xf;
+    private String out;
 
-
-
-    public Step(float valInit, float valFin, float ts) {
-        super("step");
+    Step(String nom, float valInit, float valFin, float ts, String out) {
+        super(nom);
+        this.out = out;
         xi = valInit;
         xf = valFin;
+        etats.put("init", new Etat("init",0));
         etats.put("fin", new Etat("fin", Float.MAX_VALUE));
         etats.put("deb", new Etat("deb", ts));
+
     }
 
-    public Step() {
-        super("step");
-        xi = 0;
-        xf = 0;
-        etats.put("fin", new Etat("fin", Float.MAX_VALUE));
-        etats.put("deb", new Etat("deb", 0));
-    }
 
     @Override
     protected Etat externalImpl(Etat q) throws Exception {
@@ -33,27 +28,30 @@ public class Step extends Component {
 
     @Override
     protected Etat internalImpl(Etat etat) throws Exception {
-        switch (currentEtat.nom){
+        switch (currentEtat.nom) {
+            case"init":
+                return etats.get("deb");
             case "deb":
-                return etats.get("fin");
             case "fin":
-                break;
+                return etats.get("fin");
         }
         throw new Exception("pas possible d'arriver là");
     }
 
     @Override
     protected void lambdaImpl(Etat s) {
-        switch (currentEtat.nom){
+        switch (currentEtat.nom) {
+            case "init":
+                outputs.put(out, xi);
+                break;
             case "deb":
-                outputs.put("out",xi);
-            case "fin":
-                outputs.put("out",xf);
+                outputs.put(out, xf);
+                break;
         }
     }
 
     @Override
     protected void initImpl() {
-        currentEtat= etats.get("deb");
+        currentEtat = etats.get("init");
     }
 }

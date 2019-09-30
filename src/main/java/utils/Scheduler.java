@@ -1,5 +1,6 @@
 package utils;
 
+import ODE.Adder;
 import chart.Chart;
 import chart.ChartFrame;
 import gbp.B;
@@ -21,12 +22,6 @@ public class Scheduler {
         this.components = Arrays.asList(components);
     }
 
-    void init() {
-        for (Component c : components) {
-            c.initImpl();
-        }
-    }
-
     public void run() throws Exception {
 
         ChartFrame frame = new ChartFrame("oui", "oui");
@@ -43,8 +38,9 @@ public class Scheduler {
             Collection<Component> imms = components.stream().filter(c -> c.tr == trMin).collect(Collectors.toList());
 
 
-            B b = (B) components.get(1);
-            chart.addDataToSeries(t, b.q);
+            Adder adder = (Adder) components.get(4);
+            chart.addDataToSeries(t, adder.val);
+
             t += trMin;
 
             for (Component c : imms) {
@@ -59,8 +55,9 @@ public class Scheduler {
 
                 if (imms.contains(c)) {
                     if (!ins) {
-                        System.out.println("T" + t + " | Internal sur le composant " + c.nom + " | " + c.currentEtat);
+                        String ancienEtat = c.currentEtat.nom;
                         c.internal();
+                        System.out.println("T" + t + " | Internal sur le composant " + c.nom + " | " + ancienEtat + " -> " + c.currentEtat);
                         c.tl = t;
                         c.e = 0;
                         c.tr = c.currentEtat.duree;
@@ -69,8 +66,9 @@ public class Scheduler {
                         throw new Exception("conflit");
                     }
                 } else if (ins) {
-                    System.out.println("T" + t + " | External sur le composant " + c.nom + " | " + c.currentEtat);
+                    String ancienEtat = c.currentEtat.nom;
                     c.external();
+                    System.out.println("T" + t + " | External sur le composant " + c.nom + " | " + ancienEtat + " -> " + c.currentEtat);
                     c.tl = t;
                     c.e = 0;
                     c.tr = c.currentEtat.duree;
