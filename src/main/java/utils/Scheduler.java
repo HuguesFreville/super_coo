@@ -1,9 +1,10 @@
 package utils;
 
 import ODE.Adder;
+import ODE.IntegrateurEvenements;
+import ODE.IntegrateurTemps;
 import chart.Chart;
 import chart.ChartFrame;
-import gbp.B;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 public class Scheduler {
 
     private float t = 0;
-    private final float tEnd = 20;
+    private final float tEnd = 3;
     private List<Component> components;
     private IO io;
 
@@ -25,9 +26,17 @@ public class Scheduler {
     public void run() throws Exception {
 
         ChartFrame frame = new ChartFrame("oui", "oui");
-        Chart chart = new Chart("q");
-        frame.addToLineChartPane(chart);
-        chart.setIsVisible(true);
+        Chart chart1 = new Chart("q");
+        frame.addToLineChartPane(chart1);
+        chart1.setIsVisible(true);
+
+        Chart chart2 = new Chart("integTemps");
+        frame.addToLineChartPane(chart2);
+        chart2.setIsVisible(true);
+
+        Chart chart3 = new Chart("integEvenements");
+        frame.addToLineChartPane(chart3);
+        chart3.setIsVisible(true);
 
         for (Component c : components)
             c.init();
@@ -37,17 +46,23 @@ public class Scheduler {
             float trMin = (float) components.stream().mapToDouble(c -> c.tr).min().getAsDouble();
             Collection<Component> imms = components.stream().filter(c -> c.tr == trMin).collect(Collectors.toList());
 
-
-            Adder adder = (Adder) components.get(4);
-            if (adder.outputs.containsKey("result"))
-                chart.addDataToSeries(t, (float) adder.outputs.get("result"));
-
             t += trMin;
 
             for (Component c : imms) {
                 System.out.println("T" + t + " | Lambda sur le composant " + c.nom + " | " + c.currentEtat);
                 c.lambda();
             }
+
+            Adder adder = (Adder) components.get(4);
+            if (adder.outputs.containsKey("result"))
+                chart1.addDataToSeries(t, (float) adder.outputs.get("result"));
+
+            IntegrateurTemps integrateurTemps = (IntegrateurTemps) components.get(5);
+            chart2.addDataToSeries(t, integrateurTemps.val);
+
+            IntegrateurEvenements integrateurEvenements = (IntegrateurEvenements) components.get(6);
+            chart3.addDataToSeries(t, integrateurEvenements.val);
+
 
             io.updateInOut();
 

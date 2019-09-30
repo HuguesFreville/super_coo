@@ -10,18 +10,21 @@ class Main {
     private static Step step4 = new Step("step4", 0, 4, 1.5f, "step4");
 
     private static Adder adder = new Adder("adder");
-    private static MegaIntegrator integrator=new MegaIntegrator("integrator",0.0001f);
+    private static IntegrateurTemps integrator=new IntegrateurTemps("integrator",0.001f);
+    private static IntegrateurEvenements integratore =new IntegrateurEvenements("integrator",0.001f,0.001f);
 
     private static Scheduler scheduler = new Scheduler(() -> {
         adder.updateIn(step1, step2, step3, step4);
         integrator.updateIn(adder);
+        integratore.updateIn(adder);
         step1.getOutputs().clear();
         step2.getOutputs().clear();
         step3.getOutputs().clear();
         step4.getOutputs().clear();
         adder.getOutputs().clear();
         integrator.getOutputs().clear();
-    }, step1, step2, step3, step4, adder, integrator);
+        integratore.getOutputs().clear();
+    }, step1, step2, step3, step4, adder, integrator, integratore);
 
     public static void main(String[] args) throws Exception {
         scheduler.run();
