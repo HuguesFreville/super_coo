@@ -39,7 +39,8 @@ public class Scheduler {
 
 
             Adder adder = (Adder) components.get(4);
-            chart.addDataToSeries(t, adder.val);
+            if (adder.outputs.containsKey("result"))
+                chart.addDataToSeries(t, (float) adder.outputs.get("result"));
 
             t += trMin;
 

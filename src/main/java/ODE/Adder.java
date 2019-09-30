@@ -3,21 +3,27 @@ package ODE;
 import utils.Component;
 import utils.Etat;
 
+import java.util.HashMap;
+
 public class Adder extends Component {
 
-    public float val;
+    public HashMap<String, Float> valMap;
 
     public Adder(String nom) {
         super(nom);
+        valMap = new HashMap<>();
         etats.put("calcul", new Etat("calcul", 0));
         etats.put("attente", new Etat("attente", Float.MAX_VALUE));
     }
 
     @Override
     protected Etat externalImpl(Etat q) throws Exception {
-        switch (currentEtat.nom){
+        switch (currentEtat.nom) {
             case "attente":
-                if(inputs.size() != 0){
+                if (inputs.size() != 0) {
+                    for (String s : inputs.keySet()) {
+                        valMap.put(s, (float) inputs.get(s));
+                    }
                     return etats.get("calcul");
                 }
         }
@@ -26,7 +32,7 @@ public class Adder extends Component {
 
     @Override
     protected Etat internalImpl(Etat etat) throws Exception {
-        switch (currentEtat.nom){
+        switch (currentEtat.nom) {
             case "attente":
             case "calcul":
                 return etats.get("attente");
@@ -37,7 +43,9 @@ public class Adder extends Component {
     @Override
     protected void lambdaImpl(Etat s) {
         if (currentEtat.nom.equals("calcul")) {
-            for (Object o : inputs.values()) {
+
+            float val = 0;
+            for (Object o : valMap.values()) {
                 float f = (float) o;
                 val += f;
             }
