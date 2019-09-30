@@ -35,17 +35,25 @@ public class Step extends Component {
     protected Etat internalImpl(Etat etat) throws Exception {
         switch (currentEtat.nom){
             case "deb":
-                return etats.get("")
+                return etats.get("fin");
+            case "fin":
+                break;
         }
+        throw new Exception("pas possible d'arriver là");
     }
 
     @Override
     protected void lambdaImpl(Etat s) {
-
+        switch (currentEtat.nom){
+            case "deb":
+                outputs.put("out",xi);
+            case "fin":
+                outputs.put("out",xf);
+        }
     }
 
     @Override
     protected void initImpl() {
-
+        currentEtat= etats.get("deb");
     }
 }
