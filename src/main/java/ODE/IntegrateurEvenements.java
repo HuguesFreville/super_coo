@@ -8,24 +8,24 @@ import static java.lang.Math.abs;
 public class IntegrateurEvenements extends Component {
 
     public float val;
-    private float hstep;
+    private float deltaT;
     private float deltaQ;
     private float prev;
 
-    public IntegrateurEvenements(String nom, float hstep, float deltaQ) {
+    public IntegrateurEvenements(String nom, float deltaT, float deltaQ) {
         super(nom);
-        this.hstep=hstep;
+        this.deltaT = deltaT;
         this.deltaQ = deltaQ;
-        this.prev=1;
+        this.prev = 0;
         etats.put("calcul", new Etat("calcul", 0));
-        etats.put("attente", new Etat("attente", hstep));
+        etats.put("attente", new Etat("attente", deltaT));
     }
 
     @Override
     protected Etat externalImpl(Etat q) throws Exception {
-        switch (currentEtat.nom){
+        switch (currentEtat.nom) {
             case "attente":
-                if(inputs.size() != 0){
+                if (inputs.size() != 0) {
                     return etats.get("calcul");
                 }
         }
@@ -34,12 +34,12 @@ public class IntegrateurEvenements extends Component {
 
     @Override
     protected Etat internalImpl(Etat etat) throws Exception {
-        switch (currentEtat.nom){
+        switch (currentEtat.nom) {
             case "attente":
                 return etats.get("calcul");
             case "calcul":
-                hstep=deltaQ/abs(prev);
-                return new Etat("attente", hstep);
+                deltaT = deltaQ / abs(prev);
+                return new Etat("attente", deltaT);
         }
         throw new Exception("ca doit pas aller là");
     }
@@ -47,13 +47,13 @@ public class IntegrateurEvenements extends Component {
     @Override
     protected void lambdaImpl(Etat s) {
         if (currentEtat.nom.equals("calcul")) {
-            if(inputs.isEmpty()){
-                val += hstep;
-            }else{
+            if (inputs.isEmpty()) {
+                val += deltaT*prev;
+            } else {
                 for (Object o : inputs.values()) {
                     float f = (float) o;
-                    prev=f;
-                    val += hstep*f;
+                    prev = f;
+                    val += deltaT * f;
                 }
             }
             outputs.put("result", val);
@@ -65,6 +65,8 @@ public class IntegrateurEvenements extends Component {
     @Override
     protected void initImpl() {
         currentEtat = etats.get("attente");
+        prev = 0;
+        val = 0;
     }
 }
 

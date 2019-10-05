@@ -11,17 +11,17 @@ public class IntegrateurTemps extends Component {
 
     public IntegrateurTemps(String nom, float hstep) {
         super(nom);
-        this.hstep=hstep;
-        this.prev=1;
+        this.hstep = hstep;
+        this.prev = 1;
         etats.put("calcul", new Etat("calcul", 0));
         etats.put("attente", new Etat("attente", hstep));
     }
 
     @Override
     protected Etat externalImpl(Etat q) throws Exception {
-        switch (currentEtat.nom){
+        switch (currentEtat.nom) {
             case "attente":
-                if(inputs.size() != 0){
+                if (inputs.size() != 0) {
                     return etats.get("calcul");
                 }
         }
@@ -30,7 +30,7 @@ public class IntegrateurTemps extends Component {
 
     @Override
     protected Etat internalImpl(Etat etat) throws Exception {
-        switch (currentEtat.nom){
+        switch (currentEtat.nom) {
             case "attente":
 
                 return etats.get("calcul");
@@ -43,13 +43,13 @@ public class IntegrateurTemps extends Component {
     @Override
     protected void lambdaImpl(Etat s) {
         if (currentEtat.nom.equals("calcul")) {
-            if(inputs.isEmpty()){
-                val += hstep*prev;
-            }else{
+            if (inputs.isEmpty()) {
+                val += hstep * prev;
+            } else {
                 for (Object o : inputs.values()) {
                     float f = (float) o;
-                    prev=f;
-                    val += hstep*f;
+                    prev = f;
+                    val += hstep * f;
                 }
             }
             outputs.put("result", val);
@@ -61,6 +61,8 @@ public class IntegrateurTemps extends Component {
     @Override
     protected void initImpl() {
         currentEtat = etats.get("attente");
+        prev = 0;
+        val = 0;
     }
 }
 
