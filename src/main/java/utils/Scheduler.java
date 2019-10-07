@@ -1,9 +1,10 @@
 package utils;
 
 import ODE.Adder;
+import ODE.IntegrateurEvenements;
+import ODE.IntegrateurTemps;
 import chart.Chart;
 import chart.ChartFrame;
-import gbp.B;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 public class Scheduler {
 
     private float t = 0;
-    private final float tEnd = 20;
+    private final float tEnd = 1.75f;
     private List<Component> components;
     private IO io;
 
@@ -25,9 +26,13 @@ public class Scheduler {
     public void run() throws Exception {
 
         ChartFrame frame = new ChartFrame("oui", "oui");
-        Chart chart = new Chart("q");
-        frame.addToLineChartPane(chart);
-        chart.setIsVisible(true);
+        Chart chart1 = new Chart("q");
+        frame.addToLineChartPane(chart1);
+        chart1.setIsVisible(true);
+
+        Chart chart2 = new Chart("integ");
+        frame.addToLineChartPane(chart2);
+        chart2.setIsVisible(true);
 
         for (Component c : components)
             c.init();
@@ -37,16 +42,33 @@ public class Scheduler {
             float trMin = (float) components.stream().mapToDouble(c -> c.tr).min().getAsDouble();
             Collection<Component> imms = components.stream().filter(c -> c.tr == trMin).collect(Collectors.toList());
 
-
-            Adder adder = (Adder) components.get(4);
-            if (adder.outputs.containsKey("result"))
-                chart.addDataToSeries(t, (float) adder.outputs.get("result"));
-
             t += trMin;
 
             for (Component c : imms) {
                 System.out.println("T" + t + " | Lambda sur le composant " + c.nom + " | " + c.currentEtat);
                 c.lambda();
+            }
+
+
+            //A décommenter pour avoir l'affichage des intégrateurs
+            /*Adder adder = (Adder) components.get(4);
+            if (adder.outputs.containsKey("result"))
+                chart1.addDataToSeries(t, (float) adder.outputs.get("result"));
+
+            if (components.get(5).outputs.containsKey("result")) {
+                Float val = (Float) components.get(5).outputs.get("result");
+                chart2.addDataToSeries(t, val);
+            }
+             */
+
+            //A décommenter pour avoir l'affichage de l'ODE du second ordre
+            if (components.get(2).outputs.containsKey("result")) {
+                Float val = (Float) components.get(2).outputs.get("result");
+                chart2.addDataToSeries(t, val);
+            }
+            if (components.get(2).outputs.containsKey("result")) {
+                Float val = (Float) components.get(2).outputs.get("result");
+                chart2.addDataToSeries(t, val);
             }
 
             io.updateInOut();
@@ -80,11 +102,6 @@ public class Scheduler {
                     c.tr = c.tr - trMin;
                 }
             }
-
-
-            //TODO
-            //Faut foutre les entrées dans les sorties des autres mais c'est de la merde alors faut pouvoir stocker
-            // qui va où et ca pue la merde
 
 
         }

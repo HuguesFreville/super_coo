@@ -10,21 +10,44 @@ class Main {
     private static Step step4 = new Step("step4", 0, 4, 1.5f, "step4");
 
     private static Adder adder = new Adder("adder");
-    private static MegaIntegrator integrator=new MegaIntegrator("integrator",0.0001f);
+    private static IntegrateurTemps integratorT = new IntegrateurTemps("integrator", 0.001f);
+    private static IntegrateurEvenements integratorE1 = new IntegrateurEvenements("integrator1", 0.001f, 0.001f);
+    private static IntegrateurEvenements integratorE2 = new IntegrateurEvenements("integrator2", 0.001f, 0.001f);
+    private static Constante constante = new Constante("constante");
 
-    private static Scheduler scheduler = new Scheduler(() -> {
+    private static Scheduler schedulerT = new Scheduler(() -> {
         adder.updateIn(step1, step2, step3, step4);
-        integrator.updateIn(adder);
+        integratorT.updateIn(adder);
         step1.getOutputs().clear();
         step2.getOutputs().clear();
         step3.getOutputs().clear();
         step4.getOutputs().clear();
         adder.getOutputs().clear();
-        integrator.getOutputs().clear();
-    }, step1, step2, step3, step4, adder, integrator);
+        integratorT.getOutputs().clear();
+    }, step1, step2, step3, step4, adder, integratorT);
+
+    private static Scheduler schedulerE = new Scheduler(() -> {
+        adder.updateIn(step1, step2, step3, step4);
+        integratorE1.updateIn(adder);
+        step1.getOutputs().clear();
+        step2.getOutputs().clear();
+        step3.getOutputs().clear();
+        step4.getOutputs().clear();
+        adder.getOutputs().clear();
+        integratorE1.getOutputs().clear();
+    }, step1, step2, step3, step4, adder, integratorE1);
+
+    private static Scheduler schedulerODE = new Scheduler(() -> {
+
+        integratorE1.updateIn(constante);
+        integratorE2.updateIn(integratorE1);
+        integratorE1.getOutputs().clear();
+        integratorE2.getOutputs().clear();
+        constante.getOutputs().clear();
+    }, constante, integratorE1, integratorE2);
 
     public static void main(String[] args) throws Exception {
-        scheduler.run();
+        schedulerODE.run();
     }
 
 
