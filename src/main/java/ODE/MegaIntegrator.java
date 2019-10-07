@@ -7,10 +7,12 @@ public class MegaIntegrator extends Component {
 
     public float val;
     private float hstep;
+    private float prev;
 
     public MegaIntegrator(String nom,float hstep) {
         super(nom);
         this.hstep=hstep;
+        prev=1;
         etats.put("calcul", new Etat("calcul", 0));
         etats.put("attente", new Etat("attente", hstep));
     }
@@ -42,10 +44,11 @@ public class MegaIntegrator extends Component {
     protected void lambdaImpl(Etat s) {
         if (currentEtat.nom.equals("calcul")) {
             if(inputs.isEmpty()){
-                val += hstep*val;
+                val += hstep*prev;
             }else{
                 for (Object o : inputs.values()) {
                     float f = (float) o;
+                    prev=f;
                     val += hstep*f;
                 }
             }
