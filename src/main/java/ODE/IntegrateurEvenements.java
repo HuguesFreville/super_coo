@@ -8,16 +8,16 @@ import static java.lang.Math.abs;
 public class IntegrateurEvenements extends Component {
 
     public float val;
-    private float deltaT;
+    protected float deltaT;
     private float deltaQ;
-    private float prev;
+    protected float prev;
 
     public IntegrateurEvenements(String nom, float deltaT, float deltaQ) {
         super(nom);
         this.deltaT = deltaT;
         this.deltaQ = deltaQ;
         this.prev = 0;
-        etats.put("calcul", new Etat("calcul", 0));
+        etats.put("calcul", new Etat("calcul", deltaT*0.001f));
         etats.put("attente", new Etat("attente", deltaT));
     }
 

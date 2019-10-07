@@ -13,7 +13,7 @@ public class IntegrateurTemps extends Component {
         super(nom);
         this.hstep = hstep;
         this.prev = 1;
-        etats.put("calcul", new Etat("calcul", 0));
+        etats.put("calcul", new Etat("calcul", hstep*0.001f));
         etats.put("attente", new Etat("attente", hstep));
     }
 

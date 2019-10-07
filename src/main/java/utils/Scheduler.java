@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class Scheduler {
 
     private float t = 0;
-    private final float tEnd = 1.75f;
+    private final float tEnd = 3f;
     private List<Component> components;
     private IO io;
 
@@ -27,12 +27,13 @@ public class Scheduler {
 
         ChartFrame frame = new ChartFrame("oui", "oui");
         Chart chart1 = new Chart("q");
-        frame.addToLineChartPane(chart1);
-        chart1.setIsVisible(true);
 
-        Chart chart2 = new Chart("integ");
+        Chart chart2 = new Chart("integE");
         frame.addToLineChartPane(chart2);
         chart2.setIsVisible(true);
+
+        Chart chart3 = new Chart("integT");
+
 
         for (Component c : components)
             c.init();
@@ -51,17 +52,33 @@ public class Scheduler {
 
 
             //A décommenter pour avoir l'affichage des intégrateurs
-            /*Adder adder = (Adder) components.get(4);
+/*
+            Adder adder = (Adder) components.get(4);
             if (adder.outputs.containsKey("result"))
+
+                frame.addToLineChartPane(chart1);
+                chart1.setIsVisible(true);
                 chart1.addDataToSeries(t, (float) adder.outputs.get("result"));
 
             if (components.get(5).outputs.containsKey("result")) {
                 Float val = (Float) components.get(5).outputs.get("result");
                 chart2.addDataToSeries(t, val);
             }
-             */
+            if(components.size()>6){
+                frame.addToLineChartPane(chart3);
+                chart3.setIsVisible(true);
+                if (components.get(6).outputs.containsKey("result")) {
+                    Float val2 = (Float) components.get(6).outputs.get("result");
+                    chart3.addDataToSeries(t, val2);
+                }
+            }
+*/
+
+
+
 
             //A décommenter pour avoir l'affichage de l'ODE du second ordre
+
             if (components.get(2).outputs.containsKey("result")) {
                 Float val = (Float) components.get(2).outputs.get("result");
                 chart2.addDataToSeries(t, val);
@@ -70,6 +87,7 @@ public class Scheduler {
                 Float val = (Float) components.get(2).outputs.get("result");
                 chart2.addDataToSeries(t, val);
             }
+
 
             io.updateInOut();
 

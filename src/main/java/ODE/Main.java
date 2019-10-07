@@ -1,5 +1,8 @@
 package ODE;
 
+import BouncingBall.IntegratorHauteur;
+import BouncingBall.IntegratorVitesse;
+import BouncingBall.Neg;
 import utils.Scheduler;
 
 class Main {
@@ -11,9 +14,12 @@ class Main {
 
     private static Adder adder = new Adder("adder");
     private static IntegrateurTemps integratorT = new IntegrateurTemps("integrator", 0.001f);
-    private static IntegrateurEvenements integratorE1 = new IntegrateurEvenements("integrator1", 0.001f, 0.001f);
+    private static IntegrateurEvenements integratorE1 = new IntegrateurEvenements("integrator1", 0.001f, 0.1f);
     private static IntegrateurEvenements integratorE2 = new IntegrateurEvenements("integrator2", 0.001f, 0.001f);
     private static Constante constante = new Constante("constante");
+    private static IntegratorVitesse IV=new IntegratorVitesse("IV",0.001f,0.1f,0.8f);
+    private static IntegratorHauteur IH=new IntegratorHauteur("IH",0.01f,0.001f,10f);
+    private static Neg N=new Neg("n");
 
     private static Scheduler schedulerT = new Scheduler(() -> {
         adder.updateIn(step1, step2, step3, step4);
@@ -29,13 +35,15 @@ class Main {
     private static Scheduler schedulerE = new Scheduler(() -> {
         adder.updateIn(step1, step2, step3, step4);
         integratorE1.updateIn(adder);
+        integratorT.updateIn(adder);
         step1.getOutputs().clear();
         step2.getOutputs().clear();
         step3.getOutputs().clear();
         step4.getOutputs().clear();
         adder.getOutputs().clear();
         integratorE1.getOutputs().clear();
-    }, step1, step2, step3, step4, adder, integratorE1);
+        integratorT.getOutputs().clear();
+    }, step1, step2, step3, step4, adder, integratorE1,integratorT);
 
     private static Scheduler schedulerODE = new Scheduler(() -> {
 
@@ -46,8 +54,17 @@ class Main {
         constante.getOutputs().clear();
     }, constante, integratorE1, integratorE2);
 
+    private static Scheduler schedulerBB=new Scheduler(() ->{
+        IV.updateIn(N);
+        IH.updateIn(IV);
+        N.updateIn(IH);
+        N.getOutputs().clear();
+        IH.getOutputs().clear();
+        IV.getOutputs().clear();
+    },N, IV, IH);
+
     public static void main(String[] args) throws Exception {
-        schedulerODE.run();
+        schedulerBB.run();
     }
 
 
